@@ -84,5 +84,14 @@ python test_pipeline.py
 
 ---
 
+## 🌍 Deploy Static Website with GitHub Actions
+1. Push your changes to the `main` branch.
+2. In GitHub, go to **Settings → Pages** and set **Source** to **GitHub Actions**.
+3. The workflow at `.github/workflows/deploy-pages.yml` will publish the `static/` folder.
+4. Your site will be available at:
+   - `https://<your-username>.github.io/<your-repository>/`
+
+---
+
 ## 👥 Authors
 Developed for Smart India Hackathon (SIH) 2026.
