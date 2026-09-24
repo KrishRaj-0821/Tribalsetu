@@ -1,0 +1,76 @@
+{
+  "schemes": [
+    {
+      "id": "pms_st",
+      "name": "Post-Matric Scholarship for ST Students (PMS-ST)",
+      "ministry": "Ministry of Tribal Affairs (MoTA)",
+      "category": "Higher Secondary / College / University",
+      "income_limit": 250000,
+      "award_amount": "Tuition Fees + Up to ₹13,500/yr Maintenance Allowance",
+      "deadline": "31 October 2026",
+      "required_documents": [
+        "ST Caste Certificate (Digital Signed)",
+        "Income Certificate (< ₹2,50,000/yr)",
+        "Residential / Domicile Certificate",
+        "Previous Year Academic Marksheet (Min 50%)",
+        "College Admission Receipt / Bonafide",
+        "Aadhaar Card (NPCI DBT Linked Bank Account)"
+      ],
+      "eligible_courses": ["Intermediate (11th/12th)", "Diploma", "UG Degrees (BA/BSc/BTech)", "PG Degrees (MA/MSc/MTech)"]
+    },
+    {
+      "id": "nfst",
+      "name": "National Fellowship for Higher Education of ST Students (NFST)",
+      "ministry": "Ministry of Tribal Affairs (MoTA)",
+      "category": "M.Phil / Ph.D. Research Fellowship",
+      "income_limit": 600000,
+      "award_amount": "₹31,000 - ₹35,000 per month + Contingency Grant",
+      "deadline": "15 November 2026",
+      "required_documents": [
+        "ST Caste Certificate",
+        "Post-Graduation Degree & Consolidated Marksheet (Min 55%)",
+        "Ph.D. / M.Phil. University Registration Slip",
+        "Research Synopsis / Guide Recommendation Letter",
+        "Family Income Certificate (< ₹6,00,000/yr)",
+        "Aadhaar Card (DBT Active)"
+      ],
+      "eligible_courses": ["Ph.D. (Full-time)", "Integrated Ph.D.", "M.Phil."]
+    },
+    {
+      "id": "nos_st",
+      "name": "National Overseas Scholarship for ST Candidates (NOS-ST)",
+      "ministry": "Ministry of Tribal Affairs (MoTA)",
+      "category": "Overseas Masters / Ph.D. Abroad",
+      "income_limit": 800000,
+      "award_amount": "100% Tuition Fees + Living Allowance ($15,400 / £9,900/yr) + Airfare",
+      "deadline": "30 September 2026",
+      "required_documents": [
+        "ST Caste Certificate",
+        "Unconditional Offer Letter from Top 500 QS World Ranked University",
+        "Bachelor/Master Degree Transcripts (Min 60%)",
+        "Valid Indian Passport Copy",
+        "Income Tax Return (ITR) / Income Certificate (< ₹8,00,000/yr)",
+        "Aadhaar Card"
+      ],
+      "eligible_courses": ["Masters Abroad", "Ph.D. Abroad"]
+    },
+    {
+      "id": "top_class_st",
+      "name": "National Scholarship for Higher Education in Top Class Institutions",
+      "ministry": "Ministry of Tribal Affairs (MoTA)",
+      "category": "IITs, NITs, IIMs, AIIMS, NLUs",
+      "income_limit": 600000,
+      "award_amount": "Full Tuition Fees + ₹86,000/yr Living & Books Allowance",
+      "deadline": "31 October 2026",
+      "required_documents": [
+        "ST Caste Certificate",
+        "Admission Allotment Letter from Notified Institute (IIT/NIT/IIM/AIIMS)",
+        "12th / Graduation Passing Certificate",
+        "Family Income Certificate (< ₹6,00,000/yr)",
+        "Fee Receipt of Premier Institute",
+        "Aadhaar Card (DBT Linked)"
+      ],
+      "eligible_courses": ["B.Tech (IIT/NIT)", "MBBS (AIIMS)", "MBA (IIM)", "LLB (NLU)"]
+    }
+  ]
+}

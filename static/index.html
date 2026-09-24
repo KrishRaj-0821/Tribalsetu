@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TribalSetu - AI Scholarship & Fellowship Management System (MoTA)</title>
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+
+  <!-- Navbar -->
+  <header class="navbar">
+    <div class="brand">
+      <div>
+        <h1>🏛️ TribalSetu (जनजातीय सेतु)</h1>
+        <span>Ministry of Tribal Affairs (MoTA) | Smart India Hackathon 2026 (SIH26239)</span>
+      </div>
+    </div>
+    <div class="nav-tabs">
+      <button class="tab-btn active" onclick="switchTab('student-view')">👨‍🎓 Student Portal (छात्र)</button>
+      <button class="tab-btn" onclick="switchTab('officer-view')">🏛️ Officer Dashboard (अफसर)</button>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <!-- TAB 1: STUDENT VIEW -->
+    <div id="student-view" class="tab-content">
+      <div class="grid-2">
+        
+        <!-- Left Column: Scheme Selection & Document Intake -->
+        <div class="card">
+          <h2>📋 Step 1: Smart Scheme & Pre-Requisites</h2>
+          
+          <div class="form-group">
+            <label>Select Scholarship Scheme</label>
+            <select id="scheme-select" class="form-control"></select>
+          </div>
+
+          <div style="background: #F1F5F9; padding: 12px; border-radius: 8px; margin-bottom: 16px; font-size: 13px;">
+            <div style="margin-bottom: 4px;"><strong>💰 Grant / Award:</strong> <span id="scheme-amount">Loading...</span></div>
+            <div style="margin-bottom: 4px;"><strong>⏰ Deadline:</strong> <span id="scheme-deadline">Loading...</span></div>
+            <div><strong>📊 Criteria:</strong> <span id="scheme-income">Loading...</span></div>
+          </div>
+
+          <div class="form-group">
+            <label>Mandatory Documents Checklist</label>
+            <ul id="scheme-docs" style="padding-left: 18px; font-size: 12.5px; color: #475569;"></ul>
+          </div>
+
+          <h2 style="margin-top: 24px;">📸 Step 2: 1-Click Test Samples or Upload</h2>
+          
+          <p style="font-size: 12px; color: #64748B; margin-bottom: 8px;">Click a button below for instant live jury testing:</p>
+          <div class="sample-btns">
+            <button class="btn-sample" style="border-color: #10B981; color: #047857;" onclick="loadSample('sample_genuine_st.jpg', 'Rahul Munda', 'Munda', '987654321012', 'Birsa Munda')">
+              🟢 Load Genuine ST Certificate (Rahul Munda)
+            </button>
+            <button class="btn-sample" style="border-color: #EF4444; color: #B91C1C;" onclick="loadSample('sample_tampered_fake.jpg', 'Rahul Munda', 'Munda', '987654321012', 'Birsa Munda')">
+              🔴 Load Photoshopped Fake (Tampered Income)
+            </button>
+            <button class="btn-sample" style="border-color: #F59E0B; color: #B45309;" onclick="loadSample('sample_non_st.jpg', 'Rahul Kushwaha', 'Kushwaha', '987654321012', 'Sohan Kushwaha')">
+              🟡 Load Non-ST Caste (OBC Kushwaha)
+            </button>
+          </div>
+
+          <div class="form-group">
+            <label>Applicant Full Name (as per Aadhaar)</label>
+            <input type="text" id="app-name" class="form-control" value="Rahul Munda">
+          </div>
+
+          <div class="grid-2" style="margin-bottom: 0;">
+            <div class="form-group">
+              <label>Father's Name</label>
+              <input type="text" id="app-father" class="form-control" value="Birsa Munda">
+            </div>
+            <div class="form-group">
+              <label>Claimed Tribe / Caste</label>
+              <input type="text" id="app-caste" class="form-control" value="Munda">
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div class="form-group">
+              <label>Aadhaar Number (12 Digits)</label>
+              <input type="text" id="app-aadhaar" class="form-control" value="987654321012">
+            </div>
+            <div class="form-group">
+              <label>Domicile State</label>
+              <select id="app-state" class="form-control">
+                <option value="jharkhand">Jharkhand</option>
+                <option value="odisha">Odisha</option>
+                <option value="madhya_pradesh">Madhya Pradesh</option>
+                <option value="chhattisgarh">Chhattisgarh</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Upload Caste Certificate (or drag file)</label>
+            <input type="file" id="caste-file" class="form-control" accept="image/*">
+          </div>
+
+          <div id="cert-preview-box" style="display: none; margin-bottom: 16px; text-align: center;">
+            <img id="cert-preview" style="max-height: 200px; border-radius: 6px; border: 1px solid var(--border);" alt="Document Preview">
+          </div>
+
+          <button id="btn-verify" class="btn-primary" onclick="runVerification()">
+            🚀 Run 8-Layer AI Verification
+          </button>
+        </div>
+
+        <!-- Right Column: AI Auditing Engine Results & Live Tracker -->
+        <div class="card">
+          <h2>🔍 AI Verification & Forensic Audit Results</h2>
+          
+          <div id="verification-results" style="display: none;">
+            
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+              <span id="result-badge" class="score-badge">Checking...</span>
+              <span id="result-summary" style="font-size: 13px; font-weight: 500; color: #475569;"></span>
+            </div>
+
+            <!-- ELA Heatmap Inspector -->
+            <div id="ela-heatmap-box" style="display: none; background: #000; padding: 12px; border-radius: 8px; margin-bottom: 16px; text-align: center;">
+              <div style="color: #F8FAFC; font-size: 12px; margin-bottom: 6px; font-weight: 600;">
+                🔬 Visual ELA Tampering Heatmap (Error Level Analysis)
+              </div>
+              <img id="ela-heatmap-img" style="max-height: 180px; border-radius: 4px; border: 1px solid #334155;" alt="ELA Heatmap">
+              <p id="ela-status-text" style="color: #94A3B8; font-size: 11px; margin-top: 6px;"></p>
+            </div>
+
+            <!-- Audit Trail Checkpoints -->
+            <label style="display: block; font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 6px; text-transform: uppercase;">
+              Multi-Layer Forensic Checkpoints
+            </label>
+            <div id="audit-trail-list" style="margin-bottom: 20px;"></div>
+
+            <button id="btn-submit-app" class="btn-primary" style="background: var(--accent); display: none;" onclick="submitApplication()">
+              ✓ Submit Application to Ministry Queue
+            </button>
+          </div>
+
+          <div id="empty-state" style="text-align: center; padding: 60px 20px; color: #94A3B8;">
+            <div style="font-size: 40px; margin-bottom: 10px;">🛡️</div>
+            <p>Select a sample certificate or upload a document on the left to view the instant forensic audit.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- TAB 2: OFFICER VIEW -->
+    <div id="officer-view" class="tab-content" style="display: none;">
+      
+      <!-- KPI Row -->
+      <div class="kpi-row">
+        <div class="kpi-card">
+          <h3 id="kpi-total">0</h3>
+          <p>Total Applications</p>
+        </div>
+        <div class="kpi-card" style="border-top: 4px solid var(--accent);">
+          <h3 id="kpi-green" style="color: var(--accent);">0</h3>
+          <p>Green (Auto-Approve)</p>
+        </div>
+        <div class="kpi-card" style="border-top: 4px solid var(--warning);">
+          <h3 id="kpi-yellow" style="color: var(--warning);">0</h3>
+          <p>Yellow (Manual Review)</p>
+        </div>
+        <div class="kpi-card" style="border-top: 4px solid var(--danger);">
+          <h3 id="kpi-red" style="color: var(--danger);">0</h3>
+          <p>Red (Fraud Flagged)</p>
+        </div>
+      </div>
+
+      <!-- Applications Table -->
+      <div class="card">
+        <h2>📊 District Tribal Officer (DTO) Triaging & Approval Queue</h2>
+        <div style="overflow-x: auto;">
+          <table class="app-table">
+            <thead>
+              <tr>
+                <th>App ID</th>
+                <th>Applicant Name</th>
+                <th>Tribe & State</th>
+                <th>Trust Score</th>
+                <th>AI Decision</th>
+                <th>Payment / Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="officer-table-body"></tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>

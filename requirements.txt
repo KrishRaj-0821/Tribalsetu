@@ -1,0 +1,10 @@
+fastapi>=0.110.0
+uvicorn>=0.28.0
+opencv-python>=4.9.0
+pillow>=10.0.0
+thefuzz>=0.22.1
+python-Levenshtein>=0.25.0
+numpy>=1.26.0
+python-multipart>=0.0.9
+qrcode>=7.4.2
+pydantic>=2.6.0

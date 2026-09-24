@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TribalSetu — Master Architecture Flowchart & Technical Deep-Dive</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+    <!-- Mermaid.js for Rendering Dynamic Flowcharts -->
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'dark',
+            securityLevel: 'loose',
+            themeVariables: {
+                darkMode: true,
+                background: '#0d1322',
+                primaryColor: '#6366f1',
+                primaryTextColor: '#ffffff',
+                primaryBorderColor: '#818cf8',
+                lineColor: '#94a3b8',
+                secondaryColor: '#f59e0b',
+                tertiaryColor: '#10b981'
+            }
+        });
+    </script>
+    <style>
+        :root {
+            --bg-main: #0a0f1d;
+            --bg-card: rgba(17, 24, 39, 0.85);
+            --border-color: rgba(255, 255, 255, 0.1);
+            --accent-primary: #6366f1;
+            --accent-amber: #f59e0b;
+            --accent-emerald: #10b981;
+            --accent-rose: #f43f5e;
+            --accent-cyan: #06b6d4;
+            --text-primary: #f3f4f6;
+            --text-secondary: #9ca3af;
+            --font-sans: 'Plus Jakarta Sans', sans-serif;
+            --font-mono: 'Fira Code', monospace;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-sans);
+            background-color: var(--bg-main);
+            color: var(--text-primary);
+            line-height: 1.7;
+            padding: 30px 15px;
+            background-image: 
+                radial-gradient(circle at 10% 10%, rgba(99, 102, 241, 0.12) 0%, transparent 40%),
+                radial-gradient(circle at 90% 90%, rgba(245, 158, 11, 0.08) 0%, transparent 40%),
+                linear-gradient(to bottom, #0a0f1d, #0d1322);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1240px;
+            margin: 0 auto;
+        }
+
+        /* Top Hero Header */
+        .hero {
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.7), rgba(15, 23, 42, 0.85));
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            padding: 44px;
+            backdrop-filter: blur(16px);
+            box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.6);
+            margin-bottom: 35px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent-primary), var(--accent-amber), var(--accent-emerald), var(--accent-cyan));
+        }
+
+        .badges {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 18px;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 5px 12px;
+            border-radius: 9999px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .badge-indigo { background: rgba(99, 102, 241, 0.2); color: #a5b4fc; border: 1px solid rgba(99, 102, 241, 0.4); }
+        .badge-amber { background: rgba(245, 158, 11, 0.2); color: #fcd34d; border: 1px solid rgba(245, 158, 11, 0.4); }
+        .badge-emerald { background: rgba(16, 185, 129, 0.2); color: #6ee7b7; border: 1px solid rgba(16, 185, 129, 0.4); }
+
+        .hero h1 {
+            font-size: 2.6rem;
+            font-weight: 800;
+            line-height: 1.2;
+            margin-bottom: 14px;
+            background: linear-gradient(135deg, #ffffff 40%, #cbd5e1 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero p.lead {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            max-width: 900px;
+        }
+
+        /* Flowchart Box */
+        .flowchart-wrapper {
+            background: #0d1322;
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 45px;
+            box-shadow: 0 15px 35px -10px rgba(0, 0, 0, 0.5);
+            overflow-x: auto;
+        }
+
+        .flowchart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .flowchart-header h2 {
+            font-size: 1.5rem;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .mermaid {
+            display: flex;
+            justify-content: center;
+            min-height: 450px;
+        }
+
+        /* Deep Dive Sections (Kyu hai aur Kya hai) */
+        .section-header {
+            margin: 40px 0 25px 0;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .section-header h2 {
+            font-size: 1.8rem;
+            color: #ffffff;
+            font-weight: 800;
+        }
+
+        .stage-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 18px;
+            padding: 30px;
+            margin-bottom: 24px;
+            backdrop-filter: blur(12px);
+            transition: all 0.25s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stage-card:hover {
+            border-color: rgba(99, 102, 241, 0.4);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .stage-top {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .stage-number {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            background: var(--accent-primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 1.1rem;
+            box-shadow: 0 0 15px rgba(99, 102, 241, 0.4);
+        }
+
+        .stage-top h3 {
+            font-size: 1.35rem;
+            color: #ffffff;
+            font-weight: 700;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 18px;
+            margin-top: 15px;
+        }
+
+        .info-box {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 14px;
+            padding: 20px;
+        }
+
+        .info-box h4 {
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .box-kya { border-top: 3px solid var(--accent-cyan); }
+        .box-kya h4 { color: var(--accent-cyan); }
+
+        .box-kyu { border-top: 3px solid var(--accent-amber); }
+        .box-kyu h4 { color: var(--accent-amber); }
+
+        .box-kaise { border-top: 3px solid var(--accent-emerald); }
+        .box-kaise h4 { color: var(--accent-emerald); }
+
+        .info-box p {
+            font-size: 0.92rem;
+            color: #cbd5e1;
+            line-height: 1.65;
+        }
+
+        code {
+            font-family: var(--font-mono);
+            background: rgba(0, 0, 0, 0.3);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #a5b4fc;
+            font-size: 0.88rem;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-secondary);
+            font-size: 0.88rem;
+            border-top: 1px solid var(--border-color);
+            margin-top: 50px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <!-- HERO HEADER -->
+    <header class="hero">
+        <div class="badges">
+            <span class="badge badge-indigo">SIH Problem Statement ID: 26239</span>
+            <span class="badge badge-amber">Ministry of Tribal Affairs (MoTA)</span>
+            <span class="badge badge-emerald">End-to-End Master Architecture</span>
+        </div>
+        <h1>TribalSetu: Complete Visual Flowchart & Architectural Deep-Dive</h1>
+        <p class="lead">From initial applicant auto-fill to post-selection Ph.D. fellowship DBT disbursement: A complete breakdown of what every single stage is, why it is essential, and how the underlying logic executes.</p>
+    </header>
+
+    <!-- SECTION 1: MASTER FLOWCHART -->
+    <div class="flowchart-wrapper">
+        <div class="flowchart-header">
+            <h2>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--accent-primary);"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
+                Master Visual Execution Pipeline
+            </h2>
+            <span style="font-size: 0.85rem; color: var(--text-secondary);">Rendered with Mermaid.js | Interactive Scalable Vector Graphics</span>
+        </div>
+
+        <div style="text-align: center; margin: 20px 0;">
+            <img src="tribalsetu_flowchart.jpg" alt="TribalSetu Master Flowchart Architecture" style="width: 100%; max-width: 1100px; border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.15); box-shadow: 0 15px 35px rgba(0,0,0,0.6);">
+            <p style="margin-top: 10px; font-size: 0.85rem; color: #94a3b8;">💡 <em>Tip: Right-click the image above and click "Save Image As" to share on WhatsApp or Telegram!</em></p>
+        </div>
+
+        <div class="mermaid" style="margin-top: 30px;">
+flowchart TD
+    %% STAGE 1: ONBOARDING & AUTO-FILL
+    subgraph S1["STAGE 1: Smart Onboarding & Auto-Fill"]
+        A1["Student Opens Mobile PWA"] --> A2["One-Tap Upload: Aadhaar & Marksheet"]
+        A2 --> A3["OCR & Entity Extraction"]
+        A3 --> A4["⚡ 80% Form Fields Auto-Filled!"]
+    end
+
+    %% STAGE 2: SCHEME RECOMMENDATION
+    subgraph S2["STAGE 2: Intelligent Scheme Recommender"]
+        A4 --> B1{"Student Education Level?"}
+        B1 -->|"Class 9 - 10"| B2["Pre-Matric ST Scholarship"]
+        B1 -->|"College / UG / PG"| B3["Post-Matric (PMS-ST)"]
+        B1 -->|"Ph.D. Scholar"| B4["NFST Fellowship (Monthly Stipend)"]
+        B1 -->|"Foreign Univ Offer"| B5["NOS Overseas (Oxford/Harvard)"]
+    end
+
+    %% STAGE 3: DYNAMIC DOCUMENT SLOTS
+    subgraph S3["STAGE 3: Dynamic Document Checklist Engine"]
+        B2 --> C1["Slots: School Bonafide + Caste + Income"]
+        B3 --> C2["Slots: College Bonafide + Fees + Caste + Income"]
+        B4 --> C3["Slots: Ph.D. Reg. + Synopsis + Guide Details"]
+        B5 --> C4["Slots: Passport + Offer Letter + QS Proof"]
+        
+        C1 & C2 & C3 & C4 --> D1["Uploads Required Docs"]
+        D1 --> D2{"Document Classifier Check"}
+        D2 -->|"Wrong Doc Type"| D3["⚠️ Instant Alert: Re-upload"]
+        D3 --> D1
+    end
+
+    %% STAGE 4: PRIVACY & PREPROCESSING
+    subgraph S4["STAGE 4: Privacy Guard & Preprocessing"]
+        D2 -->|"Correct Docs"| E1["DPDP Act 2023 Masking: XXXX-XXXX-1234"]
+        E1 --> E2["Vision Preprocessing: Deskew & De-Glare"]
+    end
+
+    %% STAGE 5: 5-PILLAR VERIFICATION
+    subgraph S5["STAGE 5: Sovereign 5-Pillar Verification"]
+        E2 --> F1["Pillar 1: ELA Pixel Forensics"]
+        E2 --> F2["Pillar 2: State QR PKI Engine"]
+        E2 --> F3["Pillar 3: Art. 342 Gazette DB"]
+        E2 --> F4["Pillar 4: Fuzzy Identity Matcher"]
+        E2 --> F5["Pillar 5: NPCI APB Seeding"]
+    end
+
+    %% STAGE 6: TRUST SCORE & TRIAGE
+    subgraph S6["STAGE 6: Composite Trust Score & Triaging"]
+        F1 & F2 & F3 & F4 & F5 --> G1["Composite Trust Score (0 - 100%)"]
+        G1 --> G2{"Triaged Decision"}
+        
+        G2 -->|"Score < 50%"| H1["🔴 RED: Fraud Investigation Desk"]
+        G2 -->|"Score 50% - 79%"| H2["🟡 YELLOW: Deficiency Raised"]
+        G2 -->|"Score >= 80%"| H3["🟢 GREEN: Auto-Approved!"]
+        
+        H2 --> H2_Action["1-Click SMS/WhatsApp Re-upload Link"]
+        H2_Action --> D1
+    end
+
+    %% STAGE 7: MERIT & SLOT ALLOCATION
+    subgraph S7["STAGE 7: Merit Allocation Engine"]
+        H3 --> J1{"Scheme Type?"}
+        J1 -->|"Pre/Post Matric"| J2["Direct Sanction"]
+        J1 -->|"NOS / NFST Limited Slots"| J3["Merit: 50% Marks + 30% QS Rank + 20% Vulnerability"]
+        J3 --> J4["Top 100 Slots Allocated + Dynamic Waitlist"]
+    end
+
+    %% STAGE 8: POST-SELECTION & DBT
+    subgraph S8["STAGE 8: Post-Selection Fellowship Lifecycle"]
+        J2 --> K1["Direct DBT Bank Transfer via PFMS"]
+        J4 --> K2["Ph.D. Supervisor Portal Signoff"]
+        K2 -->|"Guide Approves Quarterly Progress"| K1
+    end
+        </div>
+    </div>
+
+    <!-- SECTION 2: DEEP DIVE - HAR STAGE KA 'KYA', 'KYU', AUR 'KAISE' -->
+    <div class="section-header">
+        <h2>Deep Dive: Har Stage Ka "Kya Hai", "Kyu Hai", Aur "Kaise Kaam Karta Hai"</h2>
+    </div>
+
+    <!-- STAGE 1 CARD -->
+    <div class="stage-card">
+        <div class="stage-top">
+            <div class="stage-number">1</div>
+            <h3>Stage 1: Smart Onboarding & Upload-First Auto-Fill</h3>
+        </div>
+        <div class="grid-3">
+            <div class="info-box box-kya">
+                <h4>📌 Ye Kya Hai?</h4>
+                <p>Student ko 50 lambe fields haath se bharne ke bajaye sirf basic documents (Aadhaar + Marksheet) upload karne hote hain. System saara data automatically padh kar form fill kar deta hai.</p>
+            </div>
+            <div class="info-box box-kyu">
+                <h4>🎯 Ye Kyu Hai? (Problem Solved)</h4>
+                <p>Tribal students cyber cafe jaakar ₹200 dete hain aur typing mistakes (galat roll no, spelling) ki wajah se 40% forms babu level pe reject ho jaate hain. Ye us dard ko 100% khatam karta hai.</p>
+            </div>
+            <div class="info-box box-kaise">
+                <h4>⚙️ Kaise Kaam Karta Hai? (Logic)</h4>
+                <p>Tesseract / PaddleOCR document se <code>Name</code>, <code>Father Name</code>, <code>DOB</code>, <code>Marks</code>, aur <code>District</code> extract karta hai aur JSON payload bana kar form ke input fields mein populate kar deta hai.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- STAGE 2 CARD -->
+    <div class="stage-card">
+        <div class="stage-top">
+            <div class="stage-number">2</div>
+            <h3>Stage 2: Intelligent Scheme Recommendation Engine</h3>
+        </div>
+        <div class="grid-3">
+            <div class="info-box box-kya">
+                <h4>📌 Ye Kya Hai?</h4>
+                <p>Ek smart recommendation system jo student ki qualification ke aadhar par bataata hai ki uske liye kaunsi MoTA scholarship ya fellowship sabse best aur open hai.</p>
+            </div>
+            <div class="info-box box-kyu">
+                <h4>🎯 Ye Kyu Hai? (Problem Solved)</h4>
+                <p>Tribal students ko aksar pata hi nahi hota ki Central Government Oxford/Harvard ke liye 100% free overseas scholarship (NOS) ya Ph.D. ke liye ₹31,000+ monthly fellowship (NFST) de rahi hai.</p>
+            </div>
+            <div class="info-box box-kaise">
+                <h4>⚙️ Kaise Kaam Karta Hai? (Logic)</h4>
+                <p>Decision Tree classifier: Agar Marksheet = 10th $\to$ Pre-Matric. Agar UG/PG $\to$ Post-Matric. Agar Ph.D. enrolled $\to$ NFST. Agar Foreign University Offer Letter detected $\to$ NOS Scheme.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- STAGE 3 CARD -->
+    <div class="stage-card">
+        <div class="stage-top">
+            <div class="stage-number">3</div>
+            <h3>Stage 3: Dynamic Document Checklist & Classifier</h3>
+        </div>
+        <div class="grid-3">
+            <div class="info-box box-kya">
+                <h4>📌 Ye Kya Hai?</h4>
+                <p>Har scheme ke mutabiq dynamic document slots generate karna (jaise College Bonafide, Fee Receipt, Passport, ya Foreign Offer Letter) aur upload kiye gaye document ka type check karna.</p>
+            </div>
+            <div class="info-box box-kyu">
+                <h4>🎯 Ye Kyu Hai? (Problem Solved)</h4>
+                <p>Har scheme ki document requirement alag hoti hai. Student galti se Passport slot mein Aadhaar card upload kar dete hain jisse verification mahino delay ho jaati hai.</p>
+            </div>
+            <div class="info-box box-kaise">
+                <h4>⚙️ Kaise Kaam Karta Hai? (Logic)</h4>
+                <p>Backend ka Configurable JSON schema required slots render karta hai. Document Classification model check karta hai: Kya "Passport" slot mein sach mein MRZ code wala passport hai ya nahi.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- STAGE 4 CARD -->
+    <div class="stage-card">
+        <div class="stage-top">
+            <div class="stage-number">4</div>
+            <h3>Stage 4: Privacy Guard (DPDP Act 2023) & Preprocessing</h3>
+        </div>
+        <div class="grid-3">
+            <div class="info-box box-kya">
+                <h4>📌 Ye Kya Hai?</h4>
+                <p>Aadhaar ke pehle 8 digit ko kaala patti lagana (masking) aur rural phone se li gayi blurry, skewed, aur tubelight glare wali photos ko crystal clear flat scan banana.</p>
+            </div>
+            <div class="info-box box-kyu">
+                <h4>🎯 Ye Kyu Hai? (Problem Solved)</h4>
+                <p>12-digit raw Aadhaar save karna kanoonan apradh hai (DPDP Act 2023). Aur Bastar ke laminated certificates par camera flash glare se OCR 80% time fail ho jata tha.</p>
+            </div>
+            <div class="info-box box-kaise">
+                <h4>⚙️ Kaise Kaam Karta Hai? (Logic)</h4>
+                <p>Regex & OpenCV se <code>XXXX-XXXX-1234</code> masking. Canny Edge + Perspective Warp se image ko seedha karna. Sauvola Adaptive Thresholding se glare hata kar black-and-white banana.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- STAGE 5 CARD -->
+    <div class="stage-card">
+        <div class="stage-top">
+            <div class="stage-number">5</div>
+            <h3>Stage 5: Sovereign 5-Pillar Multi-Modal Verification</h3>
+        </div>
+        <div class="grid-3">
+            <div class="info-box box-kya">
+                <h4>📌 Ye Kya Hai?</h4>
+                <p>Parde ke peeche chalne wale 5 military-grade verification algorithms: ELA Forensics, QR RSA-2048 PKI, Article 342 Gazette DB, Fuzzy Identity Matching, aur NPCI Bank Seeding.</p>
+            </div>
+            <div class="info-box box-kyu">
+                <h4>🎯 Ye Kyu Hai? (Problem Solved)</h4>
+                <p>Photoshop se banaye gaye fake caste certificates pakadna, dusre state ke illegal quota claim rokna, aur tribal surname spelling variations (Budhu Ram Munda vs Budhu Munda) solve karna.</p>
+            </div>
+            <div class="info-box box-kaise">
+                <h4>⚙️ Kaise Kaam Karta Hai? (Logic)</h4>
+                <p>ELA compression error heatmap se tampering pakadta hai. PyCryptodome sarkari digital signature verify karta hai. SQLite MoTA Gazette check karta hai. Token-Sort fuzzy logic spelling match karta hai.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- STAGE 6 CARD -->
+    <div class="stage-card">
+        <div class="stage-top">
+            <div class="stage-number">6</div>
+            <h3>Stage 6: Composite Trust Score & Triaging (Green/Yellow/Red)</h3>
+        </div>
+        <div class="grid-3">
+            <div class="info-box box-kya">
+                <h4>📌 Ye Kya Hai?</h4>
+                <p>Ek mathematical formula jo 0 se 100% score calculate karke application ko 3 transparent channels mein sort karta hai: Green (Auto-Approved), Yellow (Deficiency), Red (Fraud).</p>
+            </div>
+            <div class="info-box box-kyu">
+                <h4>🎯 Ye Kyu Hai? (Problem Solved)</h4>
+                <p>Welfare mindset! Agar bastar ke student ki photo thodi blur hai, hum use <strong>reject nahi karte</strong>. Yellow channel mein WhatsApp link dekar 15 din mein dobara photo upload karne ka mauka dete hain.</p>
+            </div>
+            <div class="info-box box-kaise">
+                <h4>⚙️ Kaise Kaam Karta Hai? (Logic)</h4>
+                <p><code>Score = 0.25*Forensics + 0.25*QR + 0.20*Gazette + 0.20*Identity + 0.10*DBT</code>. >=80% = Auto-pass. 50-79% = SMS trigger with 1-click tokenized camera re-upload link. <50% = Officer Fraud Desk.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- STAGE 7 CARD -->
+    <div class="stage-card">
+        <div class="stage-top">
+            <div class="stage-number">7</div>
+            <h3>Stage 7: Multi-Factor Merit & Slot Allocation (NOS & NFST)</h3>
+        </div>
+        <div class="grid-3">
+            <div class="info-box box-kya">
+                <h4>📌 Ye Kya Hai?</h4>
+                <p>National Overseas Scholarship (NOS) aur Ph.D. Fellowship (NFST) ke limited seats (100-125 slots) ke liye automated, unbiased, corrupt-free merit selection engine.</p>
+            </div>
+            <div class="info-box box-kyu">
+                <h4>🎯 Ye Kyu Hai? (Problem Solved)</h4>
+                <p>10,000 tribal bachhe apply karte hain aur seats sirf 100 hoti hain. Manual selection mein nepotism ya bias ka aarop lagta hai. AI algorithm 100% transparent audit trail deta hai.</p>
+            </div>
+            <div class="info-box box-kaise">
+                <h4>⚙️ Kaise Kaam Karta Hai? (Logic)</h4>
+                <p><code>Merit = 50% Marks + 30% QS World Ranking Weight + 20% Vulnerability Index</code>. Top 100 ranks ko auto-seat allocation aur remaining ko waiting list number assign hota hai.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- STAGE 8 CARD -->
+    <div class="stage-card">
+        <div class="stage-top">
+            <div class="stage-number">8</div>
+            <h3>Stage 8: Post-Selection Fellowship Lifecycle & Supervisor Portal</h3>
+        </div>
+        <div class="grid-3">
+            <div class="info-box box-kya">
+                <h4>📌 Ye Kya Hai?</h4>
+                <p>Ph.D. scholars ko 5 saal tak har mahine stipend pahunchane ke liye University Research Supervisor / Guide ka quarterly signoff portal aur direct PFMS DBT release engine.</p>
+            </div>
+            <div class="info-box box-kyu">
+                <h4>🎯 Ye Kyu Hai? (Problem Solved)</h4>
+                <p>Fellowship one-time scholarship nahi hoti. Ph.D. scholar college aa raha hai ya research chhod di, ye check kiye bina sarkari fund release nahi ho sakta.</p>
+            </div>
+            <div class="info-box box-kaise">
+                <h4>⚙️ Kaise Kaam Karta Hai? (Logic)</h4>
+                <p>Guide login karke har 3 mahine progress report ko "Satisfactory" approve karta hai. System turant PFMS XML handshake trigger karta hai aur student ke bank account mein stipend release ho jata hai.</p>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>TribalSetu Master Architecture & Workflow Specification | Smart India Hackathon (SIH 2026) | Problem Statement: SIH26239</p>
+        <p style="margin-top: 6px; color: #6b7280;">Built for the Ministry of Tribal Affairs (MoTA) | Government of India</p>
+    </footer>
+
+</div>
+
+</body>
+</html>

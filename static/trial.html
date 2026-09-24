@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TribalSetu — 4-in-1 Document Verification Trial</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:#090d16;color:#f1f5f9;min-height:100vh;padding:20px}
+.container{max-width:900px;margin:0 auto}
+.hero{background:linear-gradient(135deg,rgba(30,41,59,.8),rgba(15,23,42,.95));border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:32px;text-align:center;margin-bottom:24px;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,#6366f1,#f59e0b,#10b981,#06b6d4)}
+.hero h1{font-size:1.8rem;font-weight:800;margin-bottom:8px;background:linear-gradient(135deg,#fff 40%,#a5b4fc);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero p{color:#94a3b8;font-size:.95rem}
+.doc-selector{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px}
+.doc-btn{background:rgba(30,41,59,.6);border:2px solid rgba(255,255,255,.08);border-radius:14px;padding:16px 8px;text-align:center;cursor:pointer;transition:all .2s;font-size:.85rem;color:#94a3b8;font-weight:600}
+.doc-btn:hover{border-color:rgba(99,102,241,.4);color:#e2e8f0}
+.doc-btn.active{border-color:#6366f1;background:rgba(99,102,241,.15);color:#a5b4fc;box-shadow:0 0 15px rgba(99,102,241,.3)}
+.doc-btn .icon{font-size:1.8rem;margin-bottom:6px}
+.upload-zone{background:rgba(15,23,42,.7);border:2px dashed rgba(255,255,255,.12);border-radius:16px;padding:40px 20px;text-align:center;cursor:pointer;transition:all .3s;margin-bottom:20px;position:relative}
+.upload-zone:hover,.upload-zone.dragover{border-color:#6366f1;background:rgba(99,102,241,.08)}
+.upload-zone .icon{font-size:3rem;margin-bottom:10px}
+.upload-zone p{color:#94a3b8;font-size:.95rem}
+.upload-zone .filename{color:#10b981;font-weight:600;margin-top:8px;font-size:1rem}
+#fileInput{display:none}
+.verify-btn{width:100%;padding:16px;background:linear-gradient(135deg,#6366f1,#4f46e5);color:white;border:none;border-radius:14px;font-size:1.15rem;font-weight:700;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:10px}
+.verify-btn:hover{box-shadow:0 0 25px rgba(99,102,241,.5);transform:translateY(-1px)}
+.verify-btn:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none}
+/* Scanner Animation */
+.scanner{display:none;position:relative;margin:24px 0;padding:20px;background:rgba(15,23,42,.8);border-radius:16px;border:1px solid rgba(99,102,241,.3);overflow:hidden}
+.scanner.active{display:block}
+.scanner-line{position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,transparent,#10b981,transparent);animation:scanMove 1.5s ease-in-out infinite}
+@keyframes scanMove{0%{top:0}50%{top:100%}100%{top:0}}
+.scanner-text{text-align:center;color:#10b981;font-weight:600;font-size:1rem;padding:30px 0}
+.scanner-text .dots::after{content:'...';animation:dots 1s steps(4) infinite}
+@keyframes dots{0%{content:''}25%{content:'.'}50%{content:'..'}75%{content:'...'}}
+/* Results */
+.results{display:none;margin-top:24px}
+.results.show{display:block}
+.verdict-banner{padding:28px;border-radius:16px;text-align:center;margin-bottom:20px;position:relative;overflow:hidden}
+.verdict-banner.genuine{background:linear-gradient(135deg,rgba(16,185,129,.15),rgba(16,185,129,.08));border:2px solid rgba(16,185,129,.4)}
+.verdict-banner.tampered{background:linear-gradient(135deg,rgba(239,68,68,.15),rgba(239,68,68,.08));border:2px solid rgba(239,68,68,.4)}
+.verdict-banner h2{font-size:1.6rem;margin-bottom:6px}
+.verdict-banner.genuine h2{color:#34d399}
+.verdict-banner.tampered h2{color:#f87171}
+.verdict-banner .score{font-size:2.4rem;font-weight:800}
+.verdict-banner.genuine .score{color:#10b981}
+.verdict-banner.tampered .score{color:#ef4444}
+.verdict-banner p{color:#cbd5e1;font-size:.9rem;margin-top:6px}
+.check-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;margin-bottom:20px}
+.check-card{background:rgba(15,23,42,.7);border:1px solid rgba(255,255,255,.06);border-radius:14px;padding:18px;transition:all .2s}
+.check-card:hover{border-color:rgba(99,102,241,.3)}
+.check-card h4{font-size:.85rem;text-transform:uppercase;letter-spacing:.04em;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.check-card .status{display:inline-block;padding:2px 8px;border-radius:6px;font-size:.75rem;font-weight:700}
+.pass{background:rgba(16,185,129,.2);color:#34d399}
+.fail{background:rgba(239,68,68,.2);color:#f87171}
+.info{background:rgba(6,182,212,.2);color:#67e8f9}
+.warn{background:rgba(245,158,11,.2);color:#fbbf24}
+.check-card p{font-size:.88rem;color:#cbd5e1;margin-top:6px;line-height:1.5}
+.heatmap-section{margin-top:20px;text-align:center}
+.heatmap-section img{max-width:100%;border-radius:12px;border:1px solid rgba(255,255,255,.1)}
+.heatmap-section h4{color:#f59e0b;margin-bottom:10px;font-size:1rem}
+.fields-table{width:100%;border-collapse:collapse;margin-top:16px;background:rgba(15,23,42,.5);border-radius:12px;overflow:hidden}
+.fields-table th,.fields-table td{padding:10px 14px;text-align:left;border-bottom:1px solid rgba(255,255,255,.05);font-size:.9rem}
+.fields-table th{color:#94a3b8;font-weight:600;text-transform:uppercase;font-size:.78rem;letter-spacing:.04em}
+.fields-table td{color:#e2e8f0}
+.reset-btn{margin-top:20px;width:100%;padding:14px;background:rgba(30,41,59,.6);color:#94a3b8;border:1px solid rgba(255,255,255,.1);border-radius:12px;font-size:1rem;font-weight:600;cursor:pointer}
+.reset-btn:hover{color:#e2e8f0;border-color:rgba(255,255,255,.2)}
+@media(max-width:600px){.doc-selector{grid-template-columns:repeat(2,1fr)}.hero h1{font-size:1.4rem}}
+</style>
+</head>
+<body>
+<div class="container">
+    <div class="hero">
+        <h1>🛡️ TribalSetu: 4-in-1 Document Verification Trial</h1>
+        <p>Upload any Aadhaar, Caste, Income, or Residence Certificate — Get instant AI forensic verification in 3 seconds!</p>
+    </div>
+
+    <!-- Step 1: Document Type -->
+    <div class="doc-selector" id="docSelector">
+        <div class="doc-btn active" data-type="aadhaar" onclick="selectDoc(this)">
+            <div class="icon">🪪</div>Aadhaar Card
+        </div>
+        <div class="doc-btn" data-type="caste" onclick="selectDoc(this)">
+            <div class="icon">📜</div>Caste Certificate
+        </div>
+        <div class="doc-btn" data-type="income" onclick="selectDoc(this)">
+            <div class="icon">💰</div>Income Certificate
+        </div>
+        <div class="doc-btn" data-type="residence" onclick="selectDoc(this)">
+            <div class="icon">🏠</div>Residence Certificate
+        </div>
+    </div>
+
+    <!-- Step 2: File Upload -->
+    <div class="upload-zone" id="uploadZone" onclick="document.getElementById('fileInput').click()">
+        <div class="icon">📁</div>
+        <p>Drag & Drop document photo here<br>ya Click karke file select karo<br><small style="color:#64748b">(JPG, PNG, PDF supported)</small></p>
+        <div class="filename" id="fileName"></div>
+    </div>
+    <input type="file" id="fileInput" accept="image/*,.pdf">
+
+    <!-- Step 3: Verify Button -->
+    <button class="verify-btn" id="verifyBtn" disabled onclick="verifyDocument()">
+        🚀 VERIFY DOCUMENT NOW
+    </button>
+
+    <!-- Scanner Animation -->
+    <div class="scanner" id="scanner">
+        <div class="scanner-line"></div>
+        <div class="scanner-text">🔬 AI Forensic Engine Scanning<span class="dots"></span></div>
+    </div>
+
+    <!-- Results Section -->
+    <div class="results" id="results">
+        <div class="verdict-banner" id="verdictBanner">
+            <h2 id="verdictTitle"></h2>
+            <div class="score" id="verdictScore"></div>
+            <p id="verdictSub"></p>
+        </div>
+
+        <div class="check-grid" id="checkGrid"></div>
+
+        <div class="heatmap-section" id="heatmapSection" style="display:none">
+            <h4>🧪 ELA Forensic Heatmap (Photoshop Detection X-Ray)</h4>
+            <p style="color:#94a3b8;font-size:.85rem;margin-bottom:10px">Dark = Original | Bright White Glow = Edited/Tampered Region</p>
+            <img id="heatmapImg" src="" alt="ELA Heatmap">
+        </div>
+
+        <div id="fieldsSection" style="margin-top:20px"></div>
+        <div id="docSpecificSection" style="margin-top:16px"></div>
+
+        <button class="reset-btn" onclick="resetAll()">🔄 Naya Document Verify Karo</button>
+    </div>
+</div>
+
+<script>
+let selectedDocType = 'aadhaar';
+let selectedFile = null;
+
+function selectDoc(el) {
+    document.querySelectorAll('.doc-btn').forEach(b => b.classList.remove('active'));
+    el.classList.add('active');
+    selectedDocType = el.dataset.type;
+}
+
+// File Input & Drag-Drop
+const uploadZone = document.getElementById('uploadZone');
+const fileInput = document.getElementById('fileInput');
+const fileName = document.getElementById('fileName');
+const verifyBtn = document.getElementById('verifyBtn');
+
+fileInput.addEventListener('change', (e) => {
+    if (e.target.files.length > 0) {
+        selectedFile = e.target.files[0];
+        fileName.textContent = '✅ ' + selectedFile.name;
+        verifyBtn.disabled = false;
+    }
+});
+
+uploadZone.addEventListener('dragover', (e) => { e.preventDefault(); uploadZone.classList.add('dragover'); });
+uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('dragover'));
+uploadZone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    uploadZone.classList.remove('dragover');
+    if (e.dataTransfer.files.length > 0) {
+        selectedFile = e.dataTransfer.files[0];
+        fileName.textContent = '✅ ' + selectedFile.name;
+        verifyBtn.disabled = false;
+    }
+});
+
+async function verifyDocument() {
+    if (!selectedFile) return;
+
+    // Show scanner
+    document.getElementById('scanner').classList.add('active');
+    document.getElementById('results').classList.remove('show');
+    verifyBtn.disabled = true;
+
+    const formData = new FormData();
+    formData.append('document', selectedFile);
+    formData.append('doc_type', selectedDocType);
+
+    try {
+        const res = await fetch('/api/trial-verify', { method: 'POST', body: formData });
+        const data = await res.json();
+        setTimeout(() => {
+            document.getElementById('scanner').classList.remove('active');
+            showResults(data);
+            verifyBtn.disabled = false;
+        }, 2500);
+    } catch (err) {
+        document.getElementById('scanner').classList.remove('active');
+        alert('Server error! Make sure the TribalSetu server is running on port 8000.');
+        verifyBtn.disabled = false;
+    }
+}
+
+function showResults(data) {
+    const results = document.getElementById('results');
+    const banner = document.getElementById('verdictBanner');
+    const title = document.getElementById('verdictTitle');
+    const score = document.getElementById('verdictScore');
+    const sub = document.getElementById('verdictSub');
+
+    const isGenuine = data.is_genuine;
+    const v = data.overall_verdict;
+    banner.className = 'verdict-banner ' + (isGenuine ? 'genuine' : 'tampered');
+    
+    const verdictLabels = {
+        'VERIFIED_GENUINE': '✅ VERIFIED GENUINE DOCUMENT',
+        'SUSPICIOUS_REVIEW_NEEDED': '⚠️ SUSPICIOUS — MANUAL REVIEW NEEDED',
+        'LIKELY_FAKE_OR_TAMPERED': '❌ LIKELY FAKE OR TAMPERED DOCUMENT',
+        'TAMPERED_DETECTED': '❌ PHOTOSHOP TAMPERING DETECTED'
+    };
+    title.textContent = verdictLabels[v] || (isGenuine ? '✅ VERIFIED' : '❌ SUSPICIOUS');
+    score.textContent = data.integrity_score + '/100 Trust Score';
+    
+    // Build scoring breakdown HTML
+    const sb = data.scoring_breakdown || {};
+    const scoreBarHTML = `
+        <div style="margin-top:12px;text-align:left;max-width:400px;margin-left:auto;margin-right:auto">
+            <div style="margin-bottom:6px;font-size:.82rem;color:#94a3b8">
+                🧪 ELA Forensics: <strong style="color:${sb.ela_points >= 30 ? '#34d399' : '#f87171'}">${sb.ela_points || 0}/40</strong>
+                <div style="background:rgba(255,255,255,.08);border-radius:4px;height:6px;margin-top:2px"><div style="width:${(sb.ela_points||0)/40*100}%;height:6px;border-radius:4px;background:${sb.ela_points >= 30 ? '#10b981' : '#ef4444'}"></div></div>
+            </div>
+            <div style="margin-bottom:6px;font-size:.82rem;color:#94a3b8">
+                📱 QR Code: <strong style="color:${sb.qr_points >= 20 ? '#34d399' : '#f87171'}">${sb.qr_points || 0}/35</strong>
+                <div style="background:rgba(255,255,255,.08);border-radius:4px;height:6px;margin-top:2px"><div style="width:${(sb.qr_points||0)/35*100}%;height:6px;border-radius:4px;background:${sb.qr_points >= 20 ? '#10b981' : '#ef4444'}"></div></div>
+            </div>
+            <div style="font-size:.82rem;color:#94a3b8">
+                📋 OCR Fields: <strong style="color:${sb.ocr_points >= 10 ? '#34d399' : '#fbbf24'}">${sb.ocr_points || 0}/25</strong>
+                <div style="background:rgba(255,255,255,.08);border-radius:4px;height:6px;margin-top:2px"><div style="width:${(sb.ocr_points||0)/25*100}%;height:6px;border-radius:4px;background:${sb.ocr_points >= 10 ? '#10b981' : '#f59e0b'}"></div></div>
+            </div>
+        </div>
+    `;
+    sub.innerHTML = scoreBarHTML;
+    
+    // Audit Trail
+    const auditHTML = (data.audit_trail || []).map(a => `<div style="font-size:.85rem;padding:4px 0;color:#cbd5e1">${a}</div>`).join('');
+    if (auditHTML) {
+        sub.innerHTML += `<div style="margin-top:12px;text-align:left;max-width:400px;margin-left:auto;margin-right:auto;border-top:1px solid rgba(255,255,255,.1);padding-top:8px">${auditHTML}</div>`; 
+    }
+
+    // Check Cards
+    const grid = document.getElementById('checkGrid');
+    const c = data.checks;
+    grid.innerHTML = `
+        <div class="check-card">
+            <h4>🧪 ELA Forensic Check <span class="status ${c.ela_forensics.status === 'PASS' ? 'pass' : 'fail'}">${c.ela_forensics.status}</span></h4>
+            <p>Tamper Score: <strong>${c.ela_forensics.tamper_score}%</strong><br>Peak Pixel Diff: ${c.ela_forensics.max_pixel_difference}<br>${c.ela_forensics.explanation}</p>
+        </div>
+        <div class="check-card">
+            <h4>📱 QR Code Scan <span class="status ${c.qr_code.status === 'FOUND' ? 'pass' : 'warn'}">${c.qr_code.status}</span></h4>
+            <p>${c.qr_code.status === 'FOUND' ? 
+                '<span class="status pass" style="margin-bottom:6px;display:inline-block">✅ Verified Government QR Token</span><br>' +
+                (c.qr_code.is_gov_domain ? '<span class="status pass">Official .gov.in Domain ✓</span><br>' : '') +
+                'Payload: <code style="word-break:break-all;font-size:.78rem;background:rgba(0,0,0,0.4);padding:4px 6px;border-radius:4px;display:block;max-height:80px;overflow-y:auto;margin-top:4px">' + (c.qr_code.data || '') + '</code>'
+                : '<span class="status fail" style="margin-bottom:6px;display:inline-block">❌ QR CODE MISSING</span><br>Government certificates (Bihar/RTPS/ServicePlus) ALWAYS have a digitally signed QR code. Missing QR is a major red flag for fake documents.'}</p>
+        </div>
+        <div class="check-card">
+            <h4>🛡️ Aadhaar DPDP Masking <span class="status ${c.aadhaar_masking.status === 'MASKED' ? 'pass' : 'info'}">${c.aadhaar_masking.status}</span></h4>
+            <p>${c.aadhaar_masking.status === 'MASKED' ? 'Masked Number: <strong style="color:#10b981;font-size:1.1rem">' + c.aadhaar_masking.masked_number + '</strong><br>DPDP Act 2023 Compliant ✓' : 'No 12-digit Aadhaar number pattern detected in text.'}</p>
+        </div>
+        <div class="check-card">
+            <h4>🔧 CV Preprocessing <span class="status ${c.preprocessing.status === 'DONE' ? 'pass' : 'info'}">${c.preprocessing.status}</span></h4>
+            <p>Deskew: ${c.preprocessing.deskew}<br>${c.preprocessing.deglare}</p>
+        </div>
+    `;
+
+    // ELA Heatmap
+    const heatmapSection = document.getElementById('heatmapSection');
+    if (c.ela_forensics.heatmap) {
+        heatmapSection.style.display = 'block';
+        document.getElementById('heatmapImg').src = c.ela_forensics.heatmap;
+    } else {
+        heatmapSection.style.display = 'none';
+    }
+
+    // Extracted Fields
+    const fieldsDiv = document.getElementById('fieldsSection');
+    const fields = data.extracted_fields;
+    const fieldKeys = Object.keys(fields);
+    if (fieldKeys.length > 0) {
+        let rows = fieldKeys.map(k => `<tr><td style="color:#94a3b8">${k.replace(/_/g,' ').toUpperCase()}</td><td><strong>${fields[k]}</strong></td></tr>`).join('');
+        fieldsDiv.innerHTML = `<h4 style="color:#06b6d4;margin-bottom:10px">📋 OCR Extracted Fields</h4><table class="fields-table"><thead><tr><th>Field</th><th>Extracted Value</th></tr></thead><tbody>${rows}</tbody></table>`;
+    } else {
+        fieldsDiv.innerHTML = '<p style="color:#64748b;text-align:center;margin-top:10px"><em>OCR could not extract text fields (Tesseract not installed or image unclear). ELA forensic check still works independently!</em></p>';
+    }
+
+    // Doc-Specific Checks
+    const docSpecDiv = document.getElementById('docSpecificSection');
+    const docSpec = data.doc_specific_checks;
+    const specKeys = Object.keys(docSpec);
+    if (specKeys.length > 0) {
+        let specRows = specKeys.map(k => `<tr><td style="color:#94a3b8">${k.replace(/_/g,' ').toUpperCase()}</td><td><strong>${typeof docSpec[k] === 'object' ? JSON.stringify(docSpec[k]) : docSpec[k]}</strong></td></tr>`).join('');
+        const docLabels = {aadhaar:'Aadhaar', caste:'Caste', income:'Income', residence:'Residence'};
+        docSpecDiv.innerHTML = `<h4 style="color:#f59e0b;margin-bottom:10px">📑 ${docLabels[data.doc_type] || ''} Certificate Specific Checks</h4><table class="fields-table"><thead><tr><th>Check</th><th>Result</th></tr></thead><tbody>${specRows}</tbody></table>`;
+    }
+
+    results.classList.add('show');
+    results.scrollIntoView({ behavior: 'smooth' });
+}
+
+function resetAll() {
+    selectedFile = null;
+    fileInput.value = '';
+    fileName.textContent = '';
+    verifyBtn.disabled = true;
+    document.getElementById('results').classList.remove('show');
+    document.getElementById('heatmapSection').style.display = 'none';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+</script>
+</body>
+</html>

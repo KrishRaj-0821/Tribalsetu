@@ -1,0 +1,906 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TribalSetu — Complete A to Z Architecture & Function Specification</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #090d16;
+            --bg-card: rgba(15, 23, 42, 0.85);
+            --border: rgba(255, 255, 255, 0.08);
+            --border-highlight: rgba(99, 102, 241, 0.4);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent-primary: #6366f1;
+            --accent-amber: #f59e0b;
+            --accent-emerald: #10b981;
+            --accent-rose: #f43f5e;
+            --accent-cyan: #06b6d4;
+            --font-sans: 'Plus Jakarta Sans', sans-serif;
+            --font-mono: 'Fira Code', monospace;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-sans);
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            line-height: 1.7;
+            padding: 30px 15px;
+            background-image: 
+                radial-gradient(circle at 10% 5%, rgba(99, 102, 241, 0.15) 0%, transparent 45%),
+                radial-gradient(circle at 90% 95%, rgba(245, 158, 11, 0.1) 0%, transparent 45%),
+                linear-gradient(to bottom, #090d16, #0d1322);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Hero Banner */
+        .hero {
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.7), rgba(15, 23, 42, 0.9));
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 45px;
+            backdrop-filter: blur(16px);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+            margin-bottom: 35px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent-primary), var(--accent-amber), var(--accent-emerald), var(--accent-cyan));
+        }
+
+        .badges {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 18px;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 6px 14px;
+            border-radius: 9999px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .badge-indigo { background: rgba(99, 102, 241, 0.2); color: #a5b4fc; border: 1px solid rgba(99, 102, 241, 0.4); }
+        .badge-amber { background: rgba(245, 158, 11, 0.2); color: #fcd34d; border: 1px solid rgba(245, 158, 11, 0.4); }
+        .badge-emerald { background: rgba(16, 185, 129, 0.2); color: #6ee7b7; border: 1px solid rgba(16, 185, 129, 0.4); }
+
+        .hero h1 {
+            font-size: 2.6rem;
+            font-weight: 800;
+            line-height: 1.2;
+            margin-bottom: 14px;
+            background: linear-gradient(135deg, #ffffff 40%, #cbd5e1 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero p.lead {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            max-width: 950px;
+        }
+
+        /* Flowchart Visual Box */
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 30px;
+            backdrop-filter: blur(14px);
+        }
+
+        .section-title {
+            font-size: 1.7rem;
+            font-weight: 800;
+            margin-bottom: 20px;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .copy-btn {
+            background: var(--accent-primary);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+        }
+
+        .copy-btn:hover {
+            background: #4f46e5;
+            box-shadow: 0 0 15px rgba(99, 102, 241, 0.5);
+        }
+
+        pre {
+            background: #060911;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 22px;
+            overflow-x: auto;
+            font-family: var(--font-mono);
+            font-size: 0.88rem;
+            color: #cbd5e1;
+            line-height: 1.55;
+            margin-top: 15px;
+        }
+
+        /* Function Cards Grid */
+        .func-card {
+            background: rgba(20, 29, 47, 0.65);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 22px;
+            border-left: 5px solid var(--accent-primary);
+            transition: all 0.2s ease;
+        }
+
+        .func-card:hover {
+            border-color: var(--border-highlight);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
+        }
+
+        .func-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .func-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .func-badge {
+            font-size: 0.75rem;
+            padding: 3px 10px;
+            border-radius: 6px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .f-stage1 { background: rgba(99, 102, 241, 0.2); color: #a5b4fc; }
+        .f-stage2 { background: rgba(6, 182, 212, 0.2); color: #67e8f9; }
+        .f-stage3 { background: rgba(245, 158, 11, 0.2); color: #fde68a; }
+        .f-stage4 { background: rgba(16, 185, 129, 0.2); color: #6ee7b7; }
+        .f-stage5 { background: rgba(244, 63, 94, 0.2); color: #fda4af; }
+
+        .detail-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 14px;
+            margin-top: 14px;
+        }
+
+        .detail-box {
+            background: rgba(10, 15, 29, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            border-radius: 10px;
+            padding: 14px 16px;
+        }
+
+        .detail-box h5 {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .h-kya { color: var(--accent-cyan); }
+        .h-kyu { color: var(--accent-amber); }
+        .h-data { color: var(--accent-emerald); }
+        .h-logic { color: #cbd5e1; }
+        .h-link { color: #c084fc; }
+
+        .detail-box p {
+            font-size: 0.88rem;
+            color: #cbd5e1;
+            line-height: 1.6;
+        }
+
+        code {
+            font-family: var(--font-mono);
+            background: rgba(0, 0, 0, 0.3);
+            color: #a5b4fc;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            border-top: 1px solid var(--border);
+            margin-top: 50px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <!-- HERO HEADER -->
+    <header class="hero">
+        <div class="badges">
+            <span class="badge badge-indigo">SIH 2026 Problem Statement ID: 26239</span>
+            <span class="badge badge-amber">Ministry of Tribal Affairs (MoTA)</span>
+            <span class="badge badge-emerald">Complete A to Z Specification</span>
+        </div>
+        <h1>TribalSetu: Complete System Architecture, Logic & Function Specification</h1>
+        <p class="lead">From initial applicant auto-fill to post-selection Ph.D. fellowship DBT disbursement: A complete breakdown of every single function, its purpose, its data source, its underlying algorithm, and its pipeline linkage.</p>
+    </header>
+
+    <!-- SECTION 1: VISUAL FLOWCHART IMAGE -->
+    <div class="card">
+        <div class="section-title">
+            <span>Visual Infographic Flowchart</span>
+            <span style="font-size: 0.85rem; color: var(--text-muted); font-weight: 400;">HD 16:9 Production Diagram</span>
+        </div>
+        <div style="text-align: center;">
+            <img src="tribalsetu_flowchart.jpg" alt="TribalSetu Flowchart" style="width: 100%; border-radius: 14px; border: 1px solid var(--border); box-shadow: 0 15px 35px rgba(0,0,0,0.5);">
+        </div>
+    </div>
+
+    <!-- SECTION 2: 100% COPY-PASTE READY TEXT FLOWCHART -->
+    <div class="card">
+        <div class="section-title">
+            <span>Copyable Master Text Flowchart</span>
+            <button class="copy-btn" onclick="copyFlowchart()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                Copy Text Flowchart
+            </button>
+        </div>
+        <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 10px;">Select all and copy, or click the button above to paste this complete ASCII flowchart anywhere (WhatsApp, Docs, Notes):</p>
+        
+        <pre id="flowchartText">====================================================================================================
+                        TRIBALSETU: MASTER END-TO-END EXECUTION PIPELINE
+====================================================================================================
+
+[STAGE 1: STUDENT ONBOARDING & AUTO-FILL]
+   │
+   ├─► Student opens Mobile App / PWA
+   ├─► One-Tap Upload: Aadhaar Card + Marksheet (or Connects DigiLocker Sandbox)
+   ├─► [FUNCTION 1: ocr_entity_extractor()] ──► Extracts: Name, DOB, Marks, Roll No, District
+   └─► Result: ⚡ 80% Form Fields Automatically Populated! (Zero typing mistakes)
+         │
+         ▼
+[STAGE 2: INTELLIGENT SCHEME RECOMMENDER]
+   │
+   ├─► [FUNCTION 2: recommend_mota_scheme()]
+   │     ├─► If Class 9th - 10th         ──► Suggests: "Pre-Matric ST Scholarship"
+   │     ├─► If College / UG / PG        ──► Suggests: "Post-Matric Scholarship (PMS-ST)"
+   │     ├─► If Ph.D. / M.Phil Scholar   ──► Suggests: "NFST Fellowship" (Monthly ₹31,000+ Stipend)
+   │     └─► If Foreign Univ Admission   ──► Suggests: "NOS Overseas Scholarship" (100% Tuition + Flight)
+         │
+         ▼
+[STAGE 3: DYNAMIC DOCUMENT CHECKLIST & CLASSIFIER]
+   │
+   ├─► [FUNCTION 3: generate_dynamic_slots()]
+   │     ├─► For Post-Matric: Slots = [College Bonafide + Fee Receipt + Caste + Income]
+   │     └─► For NOS Overseas: Slots = [Valid Passport + Foreign Offer Letter + QS Proof + Income]
+   ├─► Student Uploads Scheme-Specific Documents
+   ├─► [FUNCTION 4: classify_document_type()] ──► Checks: Kya sahi slot mein sahi document hai?
+   │     └─► If Wrong (e.g. Marksheet in Passport slot) ──► ⚠️ Instant UI Alert: "Re-upload correct doc!"
+         │
+         ▼
+[STAGE 4: PRIVACY GUARD & COMPUTER VISION PREPROCESSING]
+   │
+   ├─► [FUNCTION 5: mask_aadhaar_dpdp()] ──► DPDP Act 2023 Compliance
+   │     └─► First 8 digits redacted: [XXXX-XXXX-1234] (Raw 12 digits never saved on disk)
+   ├─► [FUNCTION 6: preprocess_cv_image()] ──► OpenCV Image Enhancement
+   │     ├─► Perspective Warp: Tilted mobile photo ko 90-degree flat scanner jaisa seedha karna
+   │     └─► Sauvola Adaptive Thresholding: Laminated certificate par tubelight flash/glare hatana
+         │
+         ▼
+[STAGE 5: SOVEREIGN 5-PILLAR VERIFICATION ENGINE (PARALLEL)]
+   │
+   ├──► [FUNCTION 7: detect_ela_tampering()]
+   │      └─► Error Level Analysis: Photoshop/Canva se Name/Date edit karne par compression anomaly pakadna
+   ├──► [FUNCTION 8: verify_qr_pki_signature()]
+   │      └─► State e-District QR scan: RSA-2048 Government Digital Signature verify karna
+   ├──► [FUNCTION 9: verify_st_gazette_art342()]
+   │      └─► MoTA Statutory DB: Check karna kya ye caste us State ke Central Gazette mein legally ST hai
+   ├──► [FUNCTION 10: fuzzy_identity_triangulation()]
+   │      └─► Token-Sort + Levenshtein: Name mismatch ("Budhu Ram Munda" vs "Budhu Munda") solve karna
+   └──► [FUNCTION 11: verify_npci_dbt_seeding()]
+          └─► Aadhaar Payment Bridge Simulator: Bank account DBT-active hai ya nahi check karna
+         │
+         ▼
+[STAGE 6: COMPOSITE TRUST SCORE & TRIAGED WORKFLOW]
+   │
+   ├─► [FUNCTION 12: calculate_composite_trust_score()]
+   │     └─► Formula: 25% ELA + 25% QR + 20% Gazette + 20% Identity + 10% DBT
+   │
+   ├─► [TRIAGED DECISION]:
+   │     ├─► 🟢 GREEN CHANNEL (Score >= 80%):
+   │     │     └─► 100% Genuine ──► Auto-Approved! Forwarded to Selection Stage
+   │     │
+   │     ├─► 🟡 YELLOW CHANNEL (Score 50% - 79%):
+   │     │     └─► Deficiency Raised (Blurry photo / Missing stamp) ──► [FUNCTION 13: trigger_deficiency_sms()]
+   │     │           └─► Student ko WhatsApp/SMS par 1-Click Re-upload link ──► 15 din mein sirf wahi doc update
+   │     │
+   │     └─► 🔴 RED CHANNEL (Score < 50%):
+   │           └─► Tampering / Fake Certificate ──► MoTA Officer Fraud Investigation Desk
+         │
+         ▼
+[STAGE 7: MERIT & SLOT ALLOCATION (FOR NOS & NFST)]
+   │
+   ├─► Regular Schemes (Pre/Post-Matric) ──► Direct Scholarship Sanction
+   └─► Limited Slot Schemes (NOS = 100 Slots) ──► [FUNCTION 14: allocate_merit_slots()]
+         ├─► Formula: Merit = (50% PG Marks) + (30% QS World Ranking Weight) + (20% Vulnerability Factor)
+         └─► Result: Top 100 Slots Awarded + Dynamic Waiting List (Rank 101-150)
+         │
+         ▼
+[STAGE 8: POST-SELECTION FELLOWSHIP LIFECYCLE & DBT]
+   │
+   ├─► Regular Scholarship ──► Direct PFMS DBT Bank Transfer
+   └─► NFST Ph.D. Scholar (5-Year Lifecycle):
+         ├─► [FUNCTION 15: supervisor_quarterly_signoff()]
+         │     └─► University Guide/HOD portal par quarterly research progress report "Satisfactory" approve karta hai
+         └─► Guide approval hote hi ──► PFMS Trigger ──► Student ke account mein Agle 3 Mahine ka Stipend Transfer!
+         │
+         ▼
+[EXECUTIVE LIVE DASHBOARD]
+   └─► MoTA Joint Secretary & Ministers monitor State-wise, District-wise real-time fund flows.
+====================================================================================================</pre>
+    </div>
+
+    <!-- SECTION 3: ALL 15 FUNCTIONS A TO Z DEEP-DIVE -->
+    <div class="card">
+        <div class="section-title">
+            <span>Complete Function-by-Function Technical Deep Dive</span>
+            <span style="font-size: 0.85rem; color: var(--text-muted); font-weight: 400;">All 15 System Functions</span>
+        </div>
+
+        <!-- FUNC 1 -->
+        <div class="func-card">
+            <div class="func-header">
+                <div class="func-title">
+                    <code>FUNCTION 1: ocr_entity_extractor(document_file)</code>
+                </div>
+                <span class="func-badge f-stage1">Stage 1: Onboarding</span>
+            </div>
+            <div class="detail-grid">
+                <div class="detail-box">
+                    <h5 class="h-kya">📌 Ye Kya Hai?</h5>
+                    <p>Document Intelligence engine jo Aadhaar aur Marksheet se student details extract karta hai.</p>
+                </div>
+                <div class="detail-box">
+                    <h5 class="h-kyu">🎯 Ye Kyu Laga Hai?</h5>
+                    <p>Cyber cafe mein manual typing errors ki wajah se 40% tribal students ke form reject ho jaate the.</p>
+                </div>
+                <div class="detail-box">
+                    <h5 class="h-data">📥 Data Kahan Se Lega?</h5>
+                    <p>Student ke phone se uploaded Aadhaar aur Marksheet image se (ya DigiLocker Sandbox se).</p>
+                </div>
+                <div class="detail-box">
+                    <h5 class="h-logic">⚙️ Underlying Logic</h5>
+                    <p>Tesseract 5.0 / PaddleOCR text nikaalta hai aur Regex + NER se Name, DOB, Marks, Roll No extract karta hai.</p>
+                </div>
+                <div class="detail-box" style="grid-column: 1 / -1;">
+                    <h5 class="h-link">🔗 Agle Function Se Kaise Link Hai?</h5>
+                    <p>Extracted student profile JSON ko seedha <strong>FUNCTION 2 (Scheme Recommender)</strong> aur <strong>FUNCTION 10 (Fuzzy Identity Matcher)</strong> ko bhejta hai.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- FUNC 2 -->
+        <div class="func-card">
+            <div class="func-header">
+                <div class="func-title">
+                    <code>FUNCTION 2: recommend_mota_scheme(student_profile_json)</code>
+                </div>
+                <span class="func-badge f-stage2">Stage 2: Recommendation</span>
+            </div>
+            <div class="detail-grid">
+                <div class="detail-box">
+                    <h5 class="h-kya">📌 Ye Kya Hai?</h5>
+                    <p>Smart Recommender jo student ki qualification ke mutabiq best central scheme suggest karta hai.</p>
+                </div>
+                <div class="detail-box">
+                    <h5 class="h-kyu">🎯 Ye Kyu Laga Hai?</h5>
+                    <p>Tribal students ko NFST (Ph.D. ₹31k/month) aur NOS (Abroad 100% Free) schemes ki jankari nahi hoti.</p>
+                </div>
+                <div class="detail-box">
+                    <h5 class="h-data">📥 Data Kahan Se Lega?</h5>
+                    <p>FUNCTION 1 ke extracted JSON (Current Education Level, Age, Marks) se.</p>
+                </div>
+                <div class="detail-box">
+                    <h5 class="h-logic">⚙️ Underlying Logic</h5>
+                    <p>10th = Pre-Matric | UG/PG = Post-Matric | Ph.D. Enrolled = NFST | Foreign Offer Letter = NOS Overseas.</p>
+                </div>
+                <div class="detail-box" style="grid-column: 1 / -1;">
+                    <h5 class="h-link">🔗 Agle Function Se Kaise Link Hai?</h5>
+                    <p>Selected Scheme ID ko <strong>FUNCTION 3 (Dynamic Slot Generator)</strong> ko pass karta hai.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- FUNC 3 -->
+        <div class="func-card">
+            <div class="func-header">
+                <div class="func-title">
+                    <code>FUNCTION 3: generate_dynamic_slots(scheme_id)</code>
+                </div>
+                <span class="func-badge f-stage3">Stage 3: Dynamic Slots</span>
+            </div>
+            <div class="detail-grid">
+                <div class="detail-box">
+                    <h5 class="h-kya">📌 Ye Kya Hai?</h5>
+                    <p>Scheme-specific dynamic upload boxes generate karne wala schema engine.</p>
+                </div>
+                <div class="detail-box">
+                    <h5 class="h-kyu">🎯 Ye Kyu Laga Hai?</h5>
+                    <p>Har scheme ki requirements alag hain. Static form mein irrelevant documents mangna confusion create karta hai.</p>
+                </div>
+                <div class="detail-box">
+                    <h5 class="h-data">📥 Data Kahan Se Lega?</h5>
+                    <p>MoTA Officer dwara banaye gaye <code>schemes_config.json</code> policy database se.</p>
+                </div>
+                <div class="detail-box">
+                    <h5 class="h-logic">⚙️ Underlying Logic</h5>
+                    <p>Post-Matric $\to$ Bonafide + Fee Receipt | NOS $\to$ Passport + Offer Letter + QS Ranking Proof.</p>
+                </div>
+                <div class="detail-box" style="grid-column: 1 / -1;">
+                    <h5 class="h-link">🔗 Agle Function Se Kaise Link Hai?</h5>
+                    <p>UI par slots render karke uploaded files ko <strong>FUNCTION 4 (Document Classifier)</strong> ko pass karta hai.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- FUNC 4 -->
+        <div class="func-card">
+            <div class="func-header">
+                <div class="func-title">
+                    <code>FUNCTION 4: classify_document_type(uploaded_file, expected_slot)</code>
+                </div>
+                <span class="func-badge f-stage3">Stage 3: Validation</span>
+            </div>
+            <div class="detail-grid">
+                <div class="detail-box">
+                    <h5 class="h-kya">📌 Ye Kya Hai?</h5>
+                    <p>Document Type Classifier jo check karta hai ki sahi slot mein sahi document upload hua hai ya nahi.</p>
+                </div>
+                <div class="detail-box">
+                    <h5 class="h-kyu">🎯 Ye Kyu Laga Hai?</h5>
+                    <p>Student galti se Passport slot mein Aadhaar card daal dete the, jisse babu form mahino latka dete the.</p>
+                </div>
+                <div class="detail-box">
+                    <h5 class="h-data">📥 Data Kahan Se Lega?</h5>
+                    <p>Uploaded file ke visual header aur text markers se.</p>
+                </div>
+                <div class="detail-box">
+                    <h5 class="h-logic">⚙️ Underlying Logic</h5>
+                    <p>Passport $\to$ MRZ code check (`P<IND`) | Bonafide $\to$ College Stamp check | Caste $\to$ "Scheduled Tribe" keyword.</p>
+                </div>
+                <div class="detail-box" style="grid-column: 1 / -1;">
+                    <h5 class="h-link">🔗 Agle Function Se Kaise Link Hai?</h5>
+                    <p>Sahi document ko <strong>FUNCTION 5 (DPDP Masker)</strong> aur <strong>FUNCTION 6 (Preprocessor)</strong> ko forward karta hai.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- FUNC 5 -->
+        <div class="func-card">
+            <div class="func-header">
+                <div class="func-title">
+                    <code>FUNCTION 5: mask_aadhaar_dpdp(document_text, image)</code>
+                </div>
+                <span class="func-badge f-stage4">Stage 4: Privacy</span>
+            </div>
+            <div class="detail-grid">
+                <div class="detail-box">
+                    <h5 class="h-kya">📌 Ye Kya Hai?</h5>
+                    <p>Aadhaar ke pehle 8 digit ko kaala patti lagane (redact karne) wala regulatory privacy filter.</p>
+                </div>
+                <div class="detail-box">
+                    <h5 class="h-kyu">🎯 Ye Kyu Laga Hai?</h5>
+                    <p>Supreme Court aur DPDP Act 2023 ke mutabiq 12-digit raw Aadhaar number store karna illegal hai.</p>
+                </div>
+                <div class="detail-box">
+                    <h5 class="h-data">📥 Data Kahan Se Lega?</h5>
+                    <p>Uploaded Aadhaar card image aur extracted text se.</p>
+                </div>
+                <div class="detail-box">
+                    <h5 class="h-logic">⚙️ Underlying Logic</h5>
+                    <p>Regex replace $\to$ <code>XXXX-XXXX-1234</code> + OpenCV <code>cv2.rectangle</code> se photo par black-box draw karna.</p>
+                </div>
+                <div class="detail-box" style="grid-column: 1 / -1;">
+                    <h5 class="h-link">🔗 Agle Function Se Kaise Link Hai?</h5>
+                    <p>Redacted safe document ko permanent audit trail database mein bhejta hai.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- FUNC 6 -->
+        <div class="func-card">
+            <div class="func-header">
+                <div class="func-title">
+                    <code>FUNCTION 6: preprocess_cv_image(image_path)</code>
+                </div>
+                <span class="func-badge f-stage4">Stage 4: Computer Vision</span>
+            </div>
+            <div class="detail-grid">
+                <div class="detail-box">
+                    <h5 class="h-kya">📌 Ye Kya Hai?</h5>
+                    <p>Mobile photo ko scanner jaisa straight aur glare-free banane wala OpenCV pipeline.</p>
+                </div>
+                <div class="detail-box">
+                    <h5 class="h-kyu">🎯 Ye Kyu Laga Hai?</h5>
+                    <p>Bastar ke tribal students ke budget phone camera mein flash reflection aur tilted angle se OCR fail hota hai.</p>
+                </div>
+                <div class="detail-box">
+                    <h5 class="h-data">📥 Data Kahan Se Lega?</h5>
+                    <p>Raw mobile photo image path se.</p>
+                </div>
+                <div class="detail-box">
+                    <h5 class="h-logic">⚙️ Underlying Logic</h5>
+                    <p>Canny Edge Detection + Perspective Warp se 90-degree deskew, Sauvola thresholding se flash glare remove karna.</p>
+                </div>
+                <div class="detail-box" style="grid-column: 1 / -1;">
+                    <h5 class="h-link">🔗 Agle Function Se Kaise Link Hai?</h5>
+                    <p>Enhanced crystal-clear image ko hamare <strong>5 Parallel Verification Pillars (Func 7, 8, 9, 10, 11)</strong> ko bhejta hai.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- FUNC 7 -->
+        <div class="func-card">
+            <div class="func-header">
+                <div class="func-title">
+                    <code>FUNCTION 7: detect_ela_tampering(image_path)</code>
+                </div>
+                <span class="func-badge f-stage5">Stage 5: Forensics</span>
+            </div>
+            <div class="detail-grid">
+                <div class="detail-box">
+                    <h5 class="h-kya">📌 Ye Kya Hai?</h5>
+                    <p>Photoshop aur Canva pixel tampering detect karne wala Error Level Analysis (ELA) engine.</p>
+                </div>
+                <div class="detail-box">
+                    <h5 class="h-kyu">🎯 Ye Kyu Laga Hai?</h5>
+                    <p>Fraud applicants doosre ka certificate lekar Photoshop mein naam aur roll number badal dete hain.</p>
+                </div>
+                <div class="detail-box">
+                    <h5 class="h-data">📥 Data Kahan Se Lega?</h5>
+                    <p>Preprocessed certificate image se.</p>
+                </div>
+                <div class="detail-box">
+                    <h5 class="h-logic">⚙️ Underlying Logic</h5>
+                    <p>Image ko 95% quality pe re-compress karke original se delta nikaalta hai. Edited box bright glow ban jata hai.</p>
+                </div>
+                <div class="detail-box" style="grid-column: 1 / -1;">
+                    <h5 class="h-link">🔗 Agle Function Se Kaise Link Hai?</h5>
+                    <p>Returns <code>Forensic_Score (0-100)</code> jo <strong>FUNCTION 12 (Trust Scorer)</strong> ko pass hota hai.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- FUNC 8 -->
+        <div class="func-card">
+            <div class="func-header">
+                <div class="func-title">
+                    <code>FUNCTION 8: verify_qr_pki_signature(image_path)</code>
+                </div>
+                <span class="func-badge f-stage5">Stage 5: Cryptography</span>
+            </div>
+            <div class="detail-grid">
+                <div class="detail-box">
+                    <h5 class="h-kya">📌 Ye Kya Hai?</h5>
+                    <p>State Government e-District QR code ki RSA-2048 Cryptographic Digital Signature verify karne wala engine.</p>
+                </div>
+                <div class="detail-box">
+                    <h5 class="h-kyu">🎯 Ye Kyu Laga Hai?</h5>
+                    <p>Agar kisi ne certificate text badal diya par QR purana chhod diya, ya fake QR banaya, toh turant pakadna.</p>
+                </div>
+                <div class="detail-box">
+                    <h5 class="h-data">📥 Data Kahan Se Lega?</h5>
+                    <p>Certificate ke scanned QR code se + State Sub-CA Public Key database se.</p>
+                </div>
+                <div class="detail-box">
+                    <h5 class="h-logic">⚙️ Underlying Logic</h5>
+                    <p>State CA Public Key se payload decrypt karta hai. 1 bit change hone par bhi signature mismatch fail hoti hai.</p>
+                </div>
+                <div class="detail-box" style="grid-column: 1 / -1;">
+                    <h5 class="h-link">🔗 Agle Function Se Kaise Link Hai?</h5>
+                    <p>Returns <code>QR_Valid: True/False</code> jo <strong>FUNCTION 12 (Trust Scorer)</strong> ko pass hota hai.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- FUNC 9 -->
+        <div class="func-card">
+            <div class="func-header">
+                <div class="func-title">
+                    <code>FUNCTION 9: verify_st_gazette_art342(state, candidate_caste)</code>
+                </div>
+                <span class="func-badge f-stage5">Stage 5: Constitutional Law</span>
+            </div>
+            <div class="detail-grid">
+                <div class="detail-box">
+                    <h5 class="h-kya">📌 Ye Kya Hai?</h5>
+                    <p>Samvidhan ke Article 342 Central Gazette database se sub-caste ki legal ST validity cross-check karna.</p>
+                </div>
+                <div class="detail-box">
+                    <h5 class="h-kyu">🎯 Ye Kyu Laga Hai?</h5>
+                    <p>Har state ki ST list alag hoti hai. Inter-state migration ka ghapla karke illegal quota lene se rokna.</p>
+                </div>
+                <div class="detail-box">
+                    <h5 class="h-data">📥 Data Kahan Se Lega?</h5>
+                    <p>MoTA ki official statutory Gazette list (705+ Tribes) se jo hamare local SQLite DB mein hai.</p>
+                </div>
+                <div class="detail-box">
+                    <h5 class="h-logic">⚙️ Underlying Logic</h5>
+                    <p>Exact relational SQL lookup: Check if candidate sub-caste exists in the official ST Order of that State.</p>
+                </div>
+                <div class="detail-box" style="grid-column: 1 / -1;">
+                    <h5 class="h-link">🔗 Agle Function Se Kaise Link Hai?</h5>
+                    <p>Returns <code>Gazette_Match: True/False</code> jo <strong>FUNCTION 12 (Trust Scorer)</strong> ko pass hota hai.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- FUNC 10 -->
+        <div class="func-card">
+            <div class="func-header">
+                <div class="func-title">
+                    <code>FUNCTION 10: fuzzy_identity_triangulation(aadhaar_name, marksheet_name, dob, father_name)</code>
+                </div>
+                <span class="func-badge f-stage5">Stage 5: NLP Matching</span>
+            </div>
+            <div class="detail-grid">
+                <div class="detail-box">
+                    <h5 class="h-kya">📌 Ye Kya Hai?</h5>
+                    <p>Tribal surnames ke spelling variations ("Budhu Ram Munda" vs "Budhu Munda") ko resolve karne wala engine.</p>
+                </div>
+                <div class="detail-box">
+                    <h5 class="h-kyu">🎯 Ye Kyu Laga Hai?</h5>
+                    <p>Chhoti si spelling variation ki wajah se innocent tribal student ka saal barbaad hone se bachana.</p>
+                </div>
+                <div class="detail-box">
+                    <h5 class="h-data">📥 Data Kahan Se Lega?</h5>
+                    <p>Aadhaar OCR text aur Marksheet OCR text se.</p>
+                </div>
+                <div class="detail-box">
+                    <h5 class="h-logic">⚙️ Underlying Logic</h5>
+                    <p>Token Sort Ratio (85%). Agar score 75-90% hai, toh DOB 100% aur Father Name >= 90% anchor match se pass karta hai.</p>
+                </div>
+                <div class="detail-box" style="grid-column: 1 / -1;">
+                    <h5 class="h-link">🔗 Agle Function Se Kaise Link Hai?</h5>
+                    <p>Returns <code>Identity_Score: 0-100</code> jo <strong>FUNCTION 12 (Trust Scorer)</strong> ko pass hota hai.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- FUNC 11 -->
+        <div class="func-card">
+            <div class="func-header">
+                <div class="func-title">
+                    <code>FUNCTION 11: verify_npci_dbt_seeding(aadhaar_number, bank_details)</code>
+                </div>
+                <span class="func-badge f-stage5">Stage 5: Banking / DBT</span>
+            </div>
+            <div class="detail-grid">
+                <div class="detail-box">
+                    <h5 class="h-kya">📌 Ye Kya Hai?</h5>
+                    <p>NPCI Aadhaar Payment Bridge (APB) seeding simulator jo DBT linkage verify karta hai.</p>
+                </div>
+                <div class="detail-box">
+                    <h5 class="h-kyu">🎯 Ye Kyu Laga Hai?</h5>
+                    <p>Hazaron crore ki scholarship bounce ho jaati hai kyunki student ka bank account Aadhaar-seeded nahi hota.</p>
+                </div>
+                <div class="detail-box">
+                    <h5 class="h-data">📥 Data Kahan Se Lega?</h5>
+                    <p>Bank IIN prefix list aur Aadhaar Verhoeff checksum algorithm se.</p>
+                </div>
+                <div class="detail-box">
+                    <h5 class="h-logic">⚙️ Underlying Logic</h5>
+                    <p>Aadhaar checksum test + Bank IIN validation + NPCI APB schema handshake simulation.</p>
+                </div>
+                <div class="detail-box" style="grid-column: 1 / -1;">
+                    <h5 class="h-link">🔗 Agle Function Se Kaise Link Hai?</h5>
+                    <p>Returns <code>DBT_Active: True/False</code> jo <strong>FUNCTION 12 (Trust Scorer)</strong> ko pass hota hai.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- FUNC 12 -->
+        <div class="func-card">
+            <div class="func-header">
+                <div class="func-title">
+                    <code>FUNCTION 12: calculate_composite_trust_score(scores_dict)</code>
+                </div>
+                <span class="func-badge f-stage1">Stage 6: Triage Decision</span>
+            </div>
+            <div class="detail-grid">
+                <div class="detail-box">
+                    <h5 class="h-kya">📌 Ye Kya Hai?</h5>
+                    <p>Composite Trust Score Calculator jo 5 verification pillars ko mathematically combine karta hai.</p>
+                </div>
+                <div class="detail-box">
+                    <h5 class="h-kyu">🎯 Ye Kyu Laga Hai?</h5>
+                    <p>Babuon ki personal bias aur rishwatkhori khatam karke transparent mathematical decision lena.</p>
+                </div>
+                <div class="detail-box">
+                    <h5 class="h-data">📥 Data Kahan Se Lega?</h5>
+                    <p>Functions 7, 8, 9, 10, aur 11 ke individual output scores se.</p>
+                </div>
+                <div class="detail-box">
+                    <h5 class="h-logic">⚙️ Underlying Logic</h5>
+                    <p><code>Score = 0.25*Forensics + 0.25*QR + 0.20*Gazette + 0.20*Identity + 0.10*DBT</code>.</p>
+                </div>
+                <div class="detail-box" style="grid-column: 1 / -1;">
+                    <h5 class="h-link">🔗 Agle Function Se Kaise Link Hai?</h5>
+                    <p>>=80% $\to$ <strong>FUNC 14 (Merit Engine)</strong> | 50-79% $\to$ <strong>FUNC 13 (Deficiency SMS)</strong> | <50% $\to$ Officer Fraud Desk.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- FUNC 13 -->
+        <div class="func-card">
+            <div class="func-header">
+                <div class="func-title">
+                    <code>FUNCTION 13: trigger_deficiency_sms(student_id, deficient_document)</code>
+                </div>
+                <span class="func-badge f-stage3">Stage 6: Welfare Loop</span>
+            </div>
+            <div class="detail-grid">
+                <div class="detail-box">
+                    <h5 class="h-kya">📌 Ye Kya Hai?</h5>
+                    <p>Automated Deficiency Communication Engine jo 1-click re-upload link bhejta hai.</p>
+                </div>
+                <div class="detail-box">
+                    <h5 class="h-kyu">🎯 Ye Kyu Laga Hai?</h5>
+                    <p>Welfare mindset! Blurry photo par bache ko direct reject na karke 15 din ka re-upload mauka dena.</p>
+                </div>
+                <div class="detail-box">
+                    <h5 class="h-data">📥 Data Kahan Se Lega?</h5>
+                    <p>Yellow channel application ID aur student ke registered phone number se.</p>
+                </div>
+                <div class="detail-box">
+                    <h5 class="h-logic">⚙️ Underlying Logic</h5>
+                    <p>Tokenized 15-day expiry link generate karke WhatsApp/SMS webhook trigger karta hai.</p>
+                </div>
+                <div class="detail-box" style="grid-column: 1 / -1;">
+                    <h5 class="h-link">🔗 Agle Function Se Kaise Link Hai?</h5>
+                    <p>Re-uploaded document ko wapas <strong>FUNCTION 6 (Preprocessor)</strong> se hote huye pipeline mein re-verify karta hai.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- FUNC 14 -->
+        <div class="func-card">
+            <div class="func-header">
+                <div class="func-title">
+                    <code>FUNCTION 14: allocate_merit_slots(applicants_pool, scheme_id)</code>
+                </div>
+                <span class="func-badge f-stage2">Stage 7: Selection</span>
+            </div>
+            <div class="detail-grid">
+                <div class="detail-box">
+                    <h5 class="h-kya">📌 Ye Kya Hai?</h5>
+                    <p>NOS Overseas (Oxford/Harvard) aur NFST ke limited slots ke liye unbiased merit selection engine.</p>
+                </div>
+                <div class="detail-box">
+                    <h5 class="h-kyu">🎯 Ye Kyu Laga Hai?</h5>
+                    <p>NOS mein pure desh mein sirf 100-125 slots hote hain. AI merit selection nepotism aur corruption rokta hai.</p>
+                </div>
+                <div class="detail-box">
+                    <h5 class="h-data">📥 Data Kahan Se Lega?</h5>
+                    <p>Green channel applicants ke marksheets aur foreign university offer letters se.</p>
+                </div>
+                <div class="detail-box">
+                    <h5 class="h-logic">⚙️ Underlying Logic</h5>
+                    <p><code>Merit = 50% Marks + 30% QS World Ranking Weight + 20% Vulnerability Factor</code>. Top 100 allocated + waitlist.</p>
+                </div>
+                <div class="detail-box" style="grid-column: 1 / -1;">
+                    <h5 class="h-link">🔗 Agle Function Se Kaise Link Hai?</h5>
+                    <p>Awarded scholars ko <strong>FUNCTION 15 (Supervisor Portal)</strong> mein onboard karta hai.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- FUNC 15 -->
+        <div class="func-card">
+            <div class="func-header">
+                <div class="func-title">
+                    <code>FUNCTION 15: supervisor_quarterly_signoff(scholar_id, quarter_report)</code>
+                </div>
+                <span class="func-badge f-stage4">Stage 8: Fellowship & DBT</span>
+            </div>
+            <div class="detail-grid">
+                <div class="detail-box">
+                    <h5 class="h-kya">📌 Ye Kya Hai?</h5>
+                    <p>Ph.D. scholars ke liye University Guide ka quarterly progress verification aur DBT milestone release portal.</p>
+                </div>
+                <div class="detail-box">
+                    <h5 class="h-kyu">🎯 Ye Kyu Laga Hai?</h5>
+                    <p>NFST fellowship 5 saal chalti hai. Research progress verify kiye bina sarkari fund release nahi ho sakta.</p>
+                </div>
+                <div class="detail-box">
+                    <h5 class="h-data">📥 Data Kahan Se Lega?</h5>
+                    <p>University Research Guide / HOD ke login credentials aur student research report se.</p>
+                </div>
+                <div class="detail-box">
+                    <h5 class="h-logic">⚙️ Underlying Logic</h5>
+                    <p>Guide progress ko "Satisfactory" approve karta hai $\to$ PFMS XML API trigger $\to$ ₹93,000+ quarterly stipend direct DBT transfer.</p>
+                </div>
+                <div class="detail-box" style="grid-column: 1 / -1;">
+                    <h5 class="h-link">🔗 Agle Function Se Kaise Link Hai?</h5>
+                    <p>Disbursement transaction status ko MoTA Executive Dashboard par live update karta hai!</p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <footer>
+        <p>TribalSetu Master Specification Dossier | Smart India Hackathon (SIH 2026) | Problem Statement: SIH26239</p>
+        <p style="margin-top: 6px; color: #64748b;">Engineered for the Ministry of Tribal Affairs (MoTA) | Government of India</p>
+    </footer>
+
+</div>
+
+<script>
+function copyFlowchart() {
+    const text = document.getElementById('flowchartText').innerText;
+    navigator.clipboard.writeText(text).then(() => {
+        alert('✅ Master Text Flowchart successfully copied to clipboard!');
+    }).catch(err => {
+        alert('Could not auto-copy, please select and copy manually.');
+    });
+}
+</script>
+
+</body>
+</html>
